@@ -9,11 +9,8 @@ class TestPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Test')),
       body: Center(
           child: ElevatedButton(
-        onPressed: () {
-          // 导航到目标页面
-          Navigator.pushNamed(context, '/home');
-        },
-        child: const Text('Go to Home'),
+        onPressed: () {},
+        child: const Text('Go to Home22'),
       )),
     );
   }

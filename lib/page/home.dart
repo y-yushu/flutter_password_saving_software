@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_password_saving_software/routes/routes.dart';
 
+/// 首页
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -17,14 +17,13 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         leading: const Icon(Icons.ac_unit_sharp),
       ),
-      body: Center(
-          child: ElevatedButton(
-        onPressed: () {
-          // 导航到目标页面
-          Navigator.pushNamed(context, testRoute);
-        },
-        child: const Text('Go to Second Screen222'),
-      )),
+      body: Body(context),
+    );
+  }
+
+  Widget Body(BuildContext context) {
+    return SizedBox(
+      child: Text('data'),
     );
   }
 }
