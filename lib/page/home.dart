@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:azlistview/azlistview.dart';
+import 'package:lpinyin/lpinyin.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -13,17 +15,79 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('首页'),
-        centerTitle: true,
-        leading: const Icon(Icons.ac_unit_sharp),
+        title: const Text('城市列表'),
       ),
       body: Body(context),
     );
   }
 
   Widget Body(BuildContext context) {
-    return SizedBox(
-      child: Text('data'),
+    final List<String> sitys = [
+      "安庆",
+      "保定",
+      "CangZhou",
+      "ChangChun",
+      "GuiZhou",
+      "HaErBin",
+      "HuiZhou",
+      "HuNan",
+      "HuZhou",
+      "吉安",
+      "JiangSu",
+      "JiangXi",
+      "JinHua",
+      "JiNing",
+      "JiXi",
+      "KunMing",
+      "LangFang",
+      "LinYi",
+      "LiuZhou",
+      "LuoYang",
+      "MeiZhou",
+      "NanYang",
+      "NeiMengGu",
+      "NingXia",
+      "青岛",
+      "QingHai",
+      "QuanZhou",
+      "RiZhao",
+      "SanYa",
+      "SuZhou",
+      "TaiWan",
+      "TaiYuan",
+      "TaiZhou",
+      "TaiZhou",
+      "TianJin",
+      "WenZhou",
+      "WuHan",
+      "WuHu",
+      "WuLuMuQi",
+      "厦门",
+      "XiAn",
+    ];
+    final List<City> dataList = sitys.map((e) => City(name: e)).toList();
+    return AzListView(
+      data: dataList,
+      itemCount: dataList.length,
+      itemBuilder: (context, i) {
+        City city = dataList[i];
+        return ListTile(
+          title: Text(city.name),
+        );
+      },
+      indexBarData: ['☆', 'A', 'B', 'C', 'X'],
     );
+  }
+}
+
+class City extends ISuspensionBean {
+  String name;
+
+  City({required this.name});
+
+  @override
+  String getSuspensionTag() {
+    String s = PinyinHelper.getFirstWordPinyin(name);
+    return s.substring(0, 1).toUpperCase();
   }
 }
