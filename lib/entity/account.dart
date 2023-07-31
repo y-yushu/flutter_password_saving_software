@@ -1,5 +1,8 @@
+import 'package:azlistview/azlistview.dart';
+import 'package:lpinyin/lpinyin.dart';
+
 // 账号
-class Account {
+class Account extends ISuspensionBean {
   String title; // 标题
   String icon; // 图标
   int sort; // 排序
@@ -13,6 +16,7 @@ class Account {
   String type; // 分类
   String remark; // 备注
   Map<String, dynamic> additionItem; // 其他
+  bool ttt;
 
   Account({
     this.title = "",
@@ -28,5 +32,28 @@ class Account {
     this.type = "",
     this.remark = "",
     this.additionItem = const {},
+    this.ttt = false,
   });
+
+  @override
+  String getSuspensionTag() {
+    if (ttt) {
+      String pinyin = PinyinHelper.getFirstWordPinyin(name);
+      String s = pinyin.substring(0, 1).toUpperCase();
+      print('==>' + s);
+      return s;
+    } else {
+      return '☆';
+    }
+  }
+
+  /// 获取拼音首字母
+  String getPinyin() {
+    if (ttt) {
+      String pinyin = PinyinHelper.getFirstWordPinyin(name);
+      return pinyin.substring(0, 1).toUpperCase();
+    } else {
+      return '☆';
+    }
+  }
 }
