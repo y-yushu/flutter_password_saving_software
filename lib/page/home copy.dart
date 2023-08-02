@@ -43,45 +43,6 @@ class _HomePageState extends State<HomePage> {
       },
       indexBarData: ['⭐', ...kIndexBarData],
     );
-    Account data1 = Account(name: 'QQ');
-    Account data2 = Account(name: '微信');
-    Account data3 = Account(name: '飞书');
-    Account data4 = Account(name: '网易');
-    Account data5 = Account(name: 'Office');
-    List<Account> list = [
-      // data1,
-      // data2,
-      // data3,
-      // data4,
-      // data5,
-      Account(name: '阿拉伯'),
-      Account(name: 'WX-1'),
-      Account(name: 'WX0'),
-      Account(name: 'WX1'),
-      Account(name: 'WX2'),
-      Account(name: 'WX3'),
-      // Account(name: 'WX4', ttt: true),
-      Account(name: 'WX5'),
-      Account(name: 'WX6'),
-      Account(name: 'WX7'),
-      Account(name: 'WX6'),
-      Account(name: 'WX8'),
-      Account(name: 'WX9'),
-      Account(name: 'WX10'),
-      Account(name: 'WX11'),
-      Account(name: 'Z'),
-    ];
-    return AzListView(
-      data: list,
-      itemCount: list.length,
-      itemBuilder: (context, i) {
-        Account data = list[i];
-        return ListTile(
-          title: Text(data.name),
-        );
-      },
-      // indexBarData: ['A', '☆', 'W', 'Z'],
-    );
   }
 }
 

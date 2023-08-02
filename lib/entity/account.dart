@@ -2,11 +2,22 @@ import 'package:azlistview/azlistview.dart';
 import 'package:flutter_password_saving_software/constant/global.dart';
 import 'package:lpinyin/lpinyin.dart';
 
+class Account {
+  String title;
+  String username;
+  String password;
+
+  Account({
+    required this.title,
+    this.username = '',
+    this.password = '',
+  });
+}
+
 // 账号
-class Account extends ISuspensionBean {
+class Account1 extends ISuspensionBean {
   String title; // 标题
   String icon; // 图标
-  int sort; // 排序
   String officialWebsite; // 官网
   String name; // 昵称（名称）
   String email; // 邮箱
@@ -19,10 +30,9 @@ class Account extends ISuspensionBean {
   Map<String, dynamic> additionItem; // 其他
   bool collect; // 是否收藏
 
-  Account({
-    this.title = "",
+  Account1({
+    required this.title,
     this.icon = "",
-    this.sort = 1,
     this.officialWebsite = "",
     this.name = "",
     this.email = "",
@@ -38,13 +48,6 @@ class Account extends ISuspensionBean {
 
   @override
   String getSuspensionTag() {
-    if (collect) return Global().star;
-    String pinyin = PinyinHelper.getFirstWordPinyin(name);
-    return pinyin.substring(0, 1).toUpperCase();
-  }
-
-  /// 获取拼音首字母
-  String getPinyin() {
     if (collect) return Global().star;
     String pinyin = PinyinHelper.getFirstWordPinyin(name);
     return pinyin.substring(0, 1).toUpperCase();
