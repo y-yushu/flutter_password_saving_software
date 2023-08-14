@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:azlistview/azlistview.dart';
-import 'package:flutter_password_saving_software/entity/account.dart';
 import 'package:lpinyin/lpinyin.dart';
 
 /// 首页

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_password_saving_software/hive/HiveUtil.dart';
 import 'package:flutter_password_saving_software/routes/routes.dart';
 
-void main() {
+void main() async {
+  await HiveUtil.initHive();
   runApp(const MyApp());
 }
 
