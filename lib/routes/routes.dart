@@ -11,8 +11,8 @@ const String editRoute = '/edit'; // 编辑页
 const String testRoute = '/test'; // 测试页
 
 final Map<String, WidgetBuilder> routes = {
-  homeRoute: (context) => const TestPage(),
-  // homeRoute: (context) => const HomePage(),
+  // homeRoute: (context) => const TestPage(),
+  homeRoute: (context) => const HomePage(),
   settingRoute: (context) => const SettingPage(),
   editRoute: (context) => const EditPage(),
   testRoute: (context) => const TestPage(),

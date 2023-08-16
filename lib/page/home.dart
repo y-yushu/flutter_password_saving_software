@@ -1,7 +1,11 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:azlistview/azlistview.dart';
-import 'package:flutter_password_saving_software/constant/global.dart';
-import 'package:lpinyin/lpinyin.dart';
+import 'package:flutter_password_saving_software/global/global.dart';
+import 'package:flutter_password_saving_software/hive/AccountAdapter.dart';
+import 'package:flutter_password_saving_software/routes/routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -16,75 +20,60 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('城市列表'),
+        title: const Text('卡片列表'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('运行开始');
+          Box<Account> box = Hive.box<Account>('mybox');
+          // box.clear();
+          String s = String.fromCharCode(Random().nextInt(26) + 97);
+          Account ac = Account(title: '$s测试', username: s);
+          box.put(ac.id, ac);
+          print('运行完成');
+        },
+        child: const Icon(Icons.add),
       ),
       body: pageBody(context),
     );
   }
 
   Widget pageBody(BuildContext context) {
-    List<City> dataList = [
-      City(name: 'JJJ 收藏', collect: true),
-      City(name: 'AAA'),
-      City(name: 'BBB'),
-      City(name: 'CCC'),
-      City(name: 'DDD'),
-      City(name: 'EEE'),
-      City(name: 'FFF'),
-      City(name: 'GGG'),
-      City(name: 'HHH'),
-      City(name: 'III'),
-      City(name: 'JJJ'),
-      City(name: 'KKK'),
-      City(name: 'LLL'),
-      City(name: 'MMM'),
-      City(name: 'NNN'),
-      City(name: 'OOO'),
-      City(name: 'PPP'),
-      City(name: 'RRR'),
-      City(name: 'SSS'),
-      City(name: 'TTT'),
-      City(name: 'UUU'),
-      City(name: 'VVV'),
-      City(name: 'WWW'),
-      City(name: 'XXX'),
-      City(name: 'YYY'),
-      City(name: 'ZZZ'),
-      City(name: '#ZZZ'),
-    ];
-    return AzListView(
-      data: dataList,
-      itemCount: dataList.length,
-      itemBuilder: (context, i) {
-        City city = dataList[i];
-        return ListTile(
-          title: Text(city.name),
+    return ValueListenableBuilder(
+      valueListenable: Hive.box<Account>('mybox').listenable(),
+      builder: (context, Box<Account> box, widget) {
+        // 排序
+        List<Account> list = box.values.toList();
+        list.sort((a, b) => a.username.compareTo(b.username));
+        // 渲染
+        return AzListView(
+          data: list,
+          itemCount: list.length,
+          itemBuilder: ((context, index) {
+            Account ac = list[index];
+            // return
+            return InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, editRoute, arguments: ac.id);
+                // Navigator.pushNamed(context, editRoute);
+              },
+              child: ListTile(
+                title: Text(ac.title),
+              ),
+            );
+          }),
+          indexBarData: [Global().star, ...kIndexBarData],
+          indexBarOptions: const IndexBarOptions(
+            needRebuild: true,
+            selectTextStyle: TextStyle(
+              fontSize: 12,
+              color: Color(0xFF2196f3),
+              fontWeight: FontWeight.w900,
+            ),
+            selectItemDecoration: BoxDecoration(),
+          ),
         );
       },
-      indexBarData: [Global().star, ...kIndexBarData],
-      indexBarOptions: const IndexBarOptions(
-        needRebuild: true,
-        selectTextStyle: TextStyle(
-          fontSize: 12,
-          color: Color(0xFF2196f3),
-          fontWeight: FontWeight.w900,
-        ),
-        selectItemDecoration: BoxDecoration(),
-      ),
     );
-  }
-}
-
-class City extends ISuspensionBean {
-  String name;
-  bool collect;
-
-  City({required this.name, this.collect = false});
-
-  @override
-  String getSuspensionTag() {
-    if (collect) return Global().star;
-    String pinyin = PinyinHelper.getFirstWordPinyin(name);
-    return pinyin.substring(0, 1).toUpperCase();
   }
 }
