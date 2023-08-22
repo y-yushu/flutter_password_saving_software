@@ -1,8 +1,11 @@
 /// 编辑（新增）
 import 'package:flutter/material.dart';
 import 'package:flutter_password_saving_software/hive/AccountAdapter.dart';
+import 'package:flutter_password_saving_software/hive/HiveUtil.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
+/// 新增/编辑页
 class EditPage extends StatefulWidget {
   const EditPage({super.key});
 
@@ -12,17 +15,28 @@ class EditPage extends StatefulWidget {
 
 class _EditPageState extends State<EditPage> {
   //录入数据
-  Account account = Account(title: '');
+  Account account = Account(id: '', title: '');
   final formKey = GlobalKey<FormState>(); // 用于管理表单状态
   @override
   Widget build(BuildContext context) {
     String? id = ModalRoute.of(context)?.settings.arguments as String?;
-    print('id:$id');
-    if (id == null) {
-      print('不存在');
-    }
+    account = getAccount(id);
+    String title = id == null ? '新建' : '修改';
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Test')),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              var box = Hive.box<Account>(HiveUtil.lockBox);
+              box.delete(account.id);
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.delete_outline),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -31,6 +45,7 @@ class _EditPageState extends State<EditPage> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: account.title,
                   onChanged: (value) {
                     account.title = value;
                   },
@@ -44,6 +59,7 @@ class _EditPageState extends State<EditPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  initialValue: account.username,
                   onChanged: (value) {
                     account.username = value;
                   },
@@ -53,6 +69,7 @@ class _EditPageState extends State<EditPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  initialValue: account.password,
                   onChanged: (value) {
                     account.password = value;
                   },
@@ -66,24 +83,12 @@ class _EditPageState extends State<EditPage> {
                     if (formKey.currentState!.validate()) {
                       // 如果表单验证通过
                       // 执行提交操作或其他操作
-                      var box = Hive.box<Account>('mybox');
-                      // box.add(account);
-                      box.put('key', account);
-                      print('yitijiao');
+                      var box = Hive.box<Account>(HiveUtil.lockBox);
+                      box.put(account.id, account);
+                      Navigator.pop(context);
                     }
                   },
-                  child: const Text('Submit'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    var box = Hive.box<Account>('mybox');
-                    // Account ac = box.getAt(0) as Account;
-                    Account ac = box.get('key') as Account;
-                    print(ac.title);
-                    print(ac.username);
-                    print(ac.password);
-                  },
-                  child: const Text('查看'),
+                  child: const Text('提交'),
                 ),
               ],
             ),
@@ -91,5 +96,18 @@ class _EditPageState extends State<EditPage> {
         ),
       ),
     );
+  }
+
+  // 判断是新增还是修改
+  Account getAccount(String? id) {
+    if (id == null) {
+      String id = const Uuid().v4();
+      Account ac = Account(id: id, title: '');
+      return ac;
+    } else {
+      var box = Hive.box<Account>(HiveUtil.lockBox);
+      Account ac = box.get(id) as Account;
+      return ac;
+    }
   }
 }

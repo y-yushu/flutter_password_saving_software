@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_password_saving_software/hive/AccountAdapter.dart';
+import 'package:flutter_password_saving_software/hive/HiveUtil.dart';
 import 'package:hive/hive.dart';
 
 class TestPage extends StatelessWidget {
@@ -8,7 +9,7 @@ class TestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //录入数据
-    Account account = Account(title: '');
+    Account account = Account(id: '', title: '');
     final formKey = GlobalKey<FormState>(); // 用于管理表单状态
 
     return Scaffold(
@@ -56,7 +57,7 @@ class TestPage extends StatelessWidget {
                     if (formKey.currentState!.validate()) {
                       // 如果表单验证通过
                       // 执行提交操作或其他操作
-                      var box = Hive.box<Account>('mybox');
+                      var box = Hive.box<Account>(HiveUtil.lockBox);
                       // box.add(account);
                       box.put('key', account);
                       print('yitijiao');
@@ -66,7 +67,7 @@ class TestPage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    var box = Hive.box<Account>('mybox');
+                    var box = Hive.box<Account>(HiveUtil.lockBox);
                     // Account ac = box.getAt(0) as Account;
                     Account ac = box.get('key') as Account;
                     print(ac.title);

@@ -5,6 +5,9 @@ class HiveUtil {
   static Future<void> initHive() async {
     await Hive.initFlutter();
     Hive.registerAdapter<Account>(AccountAdapter());
-    await Hive.openBox<Account>('mybox');
+    await Hive.openBox<Account>(lockBox);
   }
+
+  // 密码盒子
+  static String lockBox = 'lockbox';
 }

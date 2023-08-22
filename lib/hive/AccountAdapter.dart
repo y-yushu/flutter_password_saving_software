@@ -2,7 +2,6 @@ import 'package:azlistview/azlistview.dart';
 import 'package:flutter_password_saving_software/global/global.dart';
 import 'package:hive/hive.dart';
 import 'package:lpinyin/lpinyin.dart';
-import 'package:uuid/uuid.dart';
 
 @HiveType(typeId: 0)
 class Account extends HiveObject with ISuspensionBean {
@@ -18,11 +17,12 @@ class Account extends HiveObject with ISuspensionBean {
   bool collect; // 是否收藏（置顶）
 
   Account({
+    required this.id,
     required this.title,
     this.username = '',
     this.password = '',
     this.collect = false,
-  }) : id = const Uuid().v4();
+  });
 
   @override
   String getSuspensionTag() {
@@ -39,6 +39,7 @@ class AccountAdapter extends TypeAdapter<Account> {
   @override
   Account read(BinaryReader reader) {
     return Account(
+      id: reader.read(),
       title: reader.read(),
       username: reader.read(),
       password: reader.read(),
@@ -49,6 +50,7 @@ class AccountAdapter extends TypeAdapter<Account> {
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
+      ..write(obj.id)
       ..write(obj.title)
       ..write(obj.username)
       ..write(obj.password)

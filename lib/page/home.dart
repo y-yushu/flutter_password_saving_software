@@ -1,11 +1,11 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter_password_saving_software/global/global.dart';
 import 'package:flutter_password_saving_software/hive/AccountAdapter.dart';
+import 'package:flutter_password_saving_software/hive/HiveUtil.dart';
 import 'package:flutter_password_saving_software/routes/routes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart';
+import 'package:lpinyin/lpinyin.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -24,13 +24,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('运行开始');
-          Box<Account> box = Hive.box<Account>('mybox');
-          // box.clear();
-          String s = String.fromCharCode(Random().nextInt(26) + 97);
-          Account ac = Account(title: '$s测试', username: s);
-          box.put(ac.id, ac);
-          print('运行完成');
+          Navigator.pushNamed(context, editRoute);
         },
         child: const Icon(Icons.add),
       ),
@@ -40,22 +34,21 @@ class _HomePageState extends State<HomePage> {
 
   Widget pageBody(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: Hive.box<Account>('mybox').listenable(),
+      valueListenable: Hive.box<Account>(HiveUtil.lockBox).listenable(),
       builder: (context, Box<Account> box, widget) {
         // 排序
         List<Account> list = box.values.toList();
-        list.sort((a, b) => a.username.compareTo(b.username));
+        list.sort((a, b) => PinyinHelper.getFirstWordPinyin(a.title)
+            .compareTo(PinyinHelper.getFirstWordPinyin(b.title)));
         // 渲染
         return AzListView(
           data: list,
           itemCount: list.length,
           itemBuilder: ((context, index) {
             Account ac = list[index];
-            // return
             return InkWell(
               onTap: () {
                 Navigator.pushNamed(context, editRoute, arguments: ac.id);
-                // Navigator.pushNamed(context, editRoute);
               },
               child: ListTile(
                 title: Text(ac.title),
