@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:azlistview/azlistview.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_password_saving_software/global/global.dart';
 import 'package:flutter_password_saving_software/hive/AccountAdapter.dart';
 import 'package:flutter_password_saving_software/hive/HiveUtil.dart';
@@ -16,22 +17,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _isFabVisible = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('卡片列表'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, editRoute);
-        },
-        child: const Icon(Icons.add),
-      ),
+      drawer: pageDrawer(),
+      floatingActionButton: pageButton(context),
       body: pageBody(context),
     );
   }
 
+  // 页面主体
   Widget pageBody(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<Account>(HiveUtil.lockBox).listenable(),
@@ -41,32 +42,96 @@ class _HomePageState extends State<HomePage> {
         list.sort((a, b) => PinyinHelper.getFirstWordPinyin(a.title)
             .compareTo(PinyinHelper.getFirstWordPinyin(b.title)));
         // 渲染
-        return AzListView(
-          data: list,
-          itemCount: list.length,
-          itemBuilder: ((context, index) {
-            Account ac = list[index];
-            return InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, editRoute, arguments: ac.id);
-              },
-              child: ListTile(
-                title: Text(ac.title),
+        return NotificationListener(
+          onNotification: (notification) {
+            if (notification is ScrollUpdateNotification) {
+              if (notification.scrollDelta! > 0) {
+                if (_isFabVisible) {
+                  setState(() {
+                    _isFabVisible = false;
+                  });
+                }
+              } else if (notification.scrollDelta! < 0) {
+                if (!_isFabVisible) {
+                  setState(() {
+                    _isFabVisible = true;
+                  });
+                }
+              }
+            }
+            return true;
+          },
+          child: AzListView(
+            data: list,
+            itemCount: list.length,
+            itemBuilder: ((context, index) {
+              Account ac = list[index];
+              return InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, editRoute, arguments: ac.id);
+                },
+                child: ListTile(
+                  title: Text(ac.title),
+                ),
+              );
+            }),
+            indexBarData: [Global().star, ...kIndexBarData],
+            indexBarOptions: const IndexBarOptions(
+              needRebuild: true,
+              selectTextStyle: TextStyle(
+                fontSize: 12,
+                color: Color(0xFF2196f3),
+                fontWeight: FontWeight.w900,
               ),
-            );
-          }),
-          indexBarData: [Global().star, ...kIndexBarData],
-          indexBarOptions: const IndexBarOptions(
-            needRebuild: true,
-            selectTextStyle: TextStyle(
-              fontSize: 12,
-              color: Color(0xFF2196f3),
-              fontWeight: FontWeight.w900,
+              selectItemDecoration: BoxDecoration(),
             ),
-            selectItemDecoration: BoxDecoration(),
           ),
         );
       },
+    );
+  }
+
+  // 页面左滑窗口
+  Widget pageDrawer() {
+    return Drawer(
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('设置'),
+              onTap: () {
+                Navigator.pushNamed(context, settingRoute);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.css),
+              title: Text('主页2'),
+              onTap: () {
+                print('object');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 页面新增按钮
+  Widget pageButton(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200), // 动画持续时间
+      height: _isFabVisible ? 56.0 : 0.0, // 控制高度
+      width: _isFabVisible ? 56.0 : 0.0, // 控制宽度
+      child: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {
+          Navigator.pushNamed(context, editRoute);
+        },
+        child: const Icon(Icons.add),
+      ), // 当不可见时不渲染 FloatingActionButton
     );
   }
 }
