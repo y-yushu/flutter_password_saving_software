@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter_password_saving_software/global/global.dart';
 import 'package:hive/hive.dart';
@@ -29,6 +31,17 @@ class Account extends HiveObject with ISuspensionBean {
     if (collect) return Global().star;
     String pinyin = PinyinHelper.getFirstWordPinyin(title);
     return pinyin.substring(0, 1).toUpperCase();
+  }
+
+  Map<String, dynamic> toData() {
+    Map<String, dynamic> data = {
+      'id': id,
+      'title': title,
+      'username': username,
+      'password': password,
+      'collect': collect
+    };
+    return data;
   }
 }
 

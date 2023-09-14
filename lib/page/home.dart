@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter/rendering.dart';
@@ -66,6 +69,8 @@ class _HomePageState extends State<HomePage> {
             itemCount: list.length,
             itemBuilder: ((context, index) {
               Account ac = list[index];
+              print(index);
+              print(ac.id);
               return InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, editRoute, arguments: ac.id);
@@ -107,10 +112,16 @@ class _HomePageState extends State<HomePage> {
             ),
             Divider(),
             ListTile(
-              leading: Icon(Icons.css),
-              title: Text('主页2'),
+              leading: const Icon(Icons.vertical_align_bottom),
+              title: const Text('导出'),
               onTap: () {
-                print('object');
+                print('执行导出');
+                var box = Hive.box<Account>(HiveUtil.lockBox);
+                var list = box.values.toList();
+                List<Map<String, dynamic>> datas =
+                    list.map((e) => e.toData()).toList();
+                String str = jsonEncode(datas);
+                print(str);
               },
             ),
           ],
